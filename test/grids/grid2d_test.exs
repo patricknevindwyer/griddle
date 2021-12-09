@@ -60,6 +60,14 @@ defmodule ExGrids.Grid2DTest do
       assert Grid2D.at!(g, {0, 0}) == [foo: 1, bar: 3]
       assert Keyword.keyword?(Grid2D.at!(g, {0, 0}))
     end
+
+    test "negative width" do
+      assert_raise ArgumentError, "Negative width", fn -> Grid2D.new(width: -3) end
+    end
+
+    test "negative height" do
+      assert_raise ArgumentError, "Negative height", fn -> Grid2D.new(height: -3) end
+    end
   end
 
   describe "contains_point?/2" do
@@ -170,4 +178,222 @@ defmodule ExGrids.Grid2DTest do
     end
   end
 
+  describe "coordinates/1" do
+    test "empty grid" do
+      assert (Grid2D.new() |> Grid2D.coordinates()) == []
+    end
+
+    test "0 width" do
+      assert (Grid2D.new(height: 3) |> Grid2D.coordinates()) == []
+    end
+
+    test "0 height" do
+      assert (Grid2D.new(width: 3) |> Grid2D.coordinates()) == []
+    end
+
+    test "entry ordering" do
+      assert (Grid2D.new(width: 2, height: 2) |> Grid2D.coordinates()) == [{0, 0}, {0, 1}, {1, 0}, {1, 1}]
+    end
+  end
+
+  describe "at/2" do
+    test "empty grid" do
+      assert (Grid2D.new(width: 0, height: 0, default_value: 17) |> Grid2D.at({0, 0})) == nil
+    end
+
+    test "0 width" do
+      assert (Grid2D.new(width: 0, height: 3, default_value: 17) |> Grid2D.at({0, 0})) == nil
+    end
+
+    test "0 height" do
+      assert (Grid2D.new(width: 3, height: 0, default_value: 17) |> Grid2D.at({0, 0})) == nil
+    end
+
+    test "in grid" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at({1, 1})) == {:ok, 17}
+    end
+
+    test "negative x" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at({-1, 1})) == nil
+    end
+
+    test "0 x" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at({0, 1})) == {:ok, 17}
+    end
+
+    test "inside width" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at({2, 1})) == {:ok, 17}
+    end
+
+    test "outside width" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at({3, 1})) == nil
+    end
+
+    test "negative y" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at({1, -1})) == nil
+    end
+
+    test "0 y" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at({1, 0})) == {:ok, 17}
+    end
+
+    test "inside height" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at({1, 2})) == {:ok, 17}
+    end
+
+    test "outside height" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at({1, 3})) == nil
+    end
+  end
+  
+  describe "at/3" do
+    test "empty grid" do
+      assert (Grid2D.new(width: 0, height: 0, default_value: 17) |> Grid2D.at(0, 0)) == nil
+    end
+
+    test "0 width" do
+      assert (Grid2D.new(width: 0, height: 3, default_value: 17) |> Grid2D.at(0, 0)) == nil
+    end
+
+    test "0 height" do
+      assert (Grid2D.new(width: 3, height: 0, default_value: 17) |> Grid2D.at(0, 0)) == nil
+    end
+
+    test "in grid" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at(1, 1)) == {:ok, 17}
+    end
+
+    test "negative x" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at(-1, 1)) == nil
+    end
+
+    test "0 x" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at(0, 1)) == {:ok, 17}
+    end
+
+    test "inside width" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at(2, 1)) == {:ok, 17}
+    end
+
+    test "outside width" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at(3, 1)) == nil
+    end
+
+    test "negative y" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at(1, -1)) == nil
+    end
+
+    test "0 y" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at(1, 0)) == {:ok, 17}
+    end
+
+    test "inside height" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at(1, 2)) == {:ok, 17}
+    end
+
+    test "outside height" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at(1, 3)) == nil
+    end
+  end
+  
+  describe "at!/2" do
+    test "empty grid" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 0, height: 0, default_value: 17) |> Grid2D.at!({0, 0})) end
+    end
+
+    test "0 width" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 0, height: 3, default_value: 17) |> Grid2D.at!({0, 0})) end
+    end
+
+    test "0 height" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 3, height: 0, default_value: 17) |> Grid2D.at!({0, 0})) end
+    end
+
+    test "in grid" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!({1, 1})) == 17
+    end
+
+    test "negative x" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!({-1, 1})) end
+    end
+
+    test "0 x" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!({0, 1})) == 17
+    end
+
+    test "inside width" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!({2, 1})) == 17
+    end
+
+    test "outside width" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!({3, 1})) end
+    end
+
+    test "negative y" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!({1, -1})) end
+    end
+
+    test "0 y" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!({1, 0})) == 17
+    end
+
+    test "inside height" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!({1, 2})) == 17
+    end
+
+    test "outside height" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!({1, 3})) end
+    end
+  end
+  
+  describe "at!/3" do
+    test "empty grid" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 0, height: 0, default_value: 17) |> Grid2D.at!(0, 0)) end
+    end
+
+    test "0 width" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 0, height: 3, default_value: 17) |> Grid2D.at!(0, 0)) end
+    end
+
+    test "0 height" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 3, height: 0, default_value: 17) |> Grid2D.at!(0, 0)) end
+    end
+
+    test "in grid" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!(1, 1)) == 17
+    end
+
+    test "negative x" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!(-1, 1)) end
+    end
+
+    test "0 x" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!(0, 1)) == 17
+    end
+
+    test "inside width" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!(2, 1)) == 17
+    end
+
+    test "outside width" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!(3, 1)) end
+    end
+
+    test "negative y" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!(1, -1)) end
+    end
+
+    test "0 y" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!(1, 0)) == 17
+    end
+
+    test "inside height" do
+      assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!(1, 2)) == 17
+    end
+
+    test "outside height" do
+      assert_raise ArgumentError, fn -> (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at!(1, 3)) end
+    end
+  end
+  
 end

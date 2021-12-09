@@ -47,6 +47,15 @@ defmodule ExGrids.Grid2D do
     g = default_grid()
     |> with_size(opts)
 
+    # ensure this is a properly formed grid
+    if g.width < 0 do
+      raise ArgumentError, "Negative width"
+    end
+
+    if g.height < 0 do
+      raise ArgumentError, "Negative height"
+    end
+
     # default value fill, and return the grid
     d_fn = default_function(opts)
     g
@@ -141,8 +150,20 @@ defmodule ExGrids.Grid2D do
     grid |> Map.put(:grid, updated_grid)
   end
 
-  defp width_range(%Grid2D{width: w}), do: 0..(w - 1)
-  defp height_range(%Grid2D{height: h}), do: 0..(h - 1)
+  defp width_range(%Grid2D{width: w}) do
+    if w > 0 do
+      0..(w - 1)
+    else
+      []
+    end
+  end
+  defp height_range(%Grid2D{height: h}) do
+    if h > 0 do
+      0..(h - 1)
+    else
+      []
+    end
+  end
 
   @doc """
   Retrieve a list of all coordinates in the grid, as a list of `{x, y}`
