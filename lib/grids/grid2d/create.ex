@@ -5,7 +5,8 @@ defmodule ExGrids.Grid2D.Create do
 
   alias ExGrids.Grid2D
   import ExGrids.Grid2D.Mutate, only: [fill: 2]
-  
+  import ExGrids.Grid2D.Enum, only: [put: 3]
+
   @doc """
   Generate a new, empty grid. This is a zero width, zero height
   grid.
@@ -159,15 +160,6 @@ defmodule ExGrids.Grid2D.Create do
   defp inject_values(grid, coord_val_pairs) when is_list(coord_val_pairs) do
     coord_val_pairs
     |> Enum.reduce(grid, fn {coord, value}, acc_grid -> put(acc_grid, coord, value) end)
-  end
-
-  # TODO: move to mutate
-  # TODO: make public
-  # TODO: document
-  # TODO: tests
-  defp put(grid, coord, v) do
-    g = grid.grid |> Map.put(coord, v)
-    grid |> Map.put(:grid, g)
   end
 
 end

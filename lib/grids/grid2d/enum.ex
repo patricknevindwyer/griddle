@@ -184,7 +184,7 @@ defmodule ExGrids.Grid2D.Enum do
 
   ## Example
 
-      iex> Grid2D.Create.new(width: 3, height: 3) |> Grid2D.Enum.map(fn _g, _coord, v -> v + 42 end) |> Grid.Enum.at!(2, 2)
+      iex> Grid2D.Create.new(width: 3, height: 3) |> Grid2D.Enum.map(fn _g, _coord, v -> v + 42 end) |> Grid2D.Enum.at!(2, 2)
       42
 
   """
@@ -207,10 +207,44 @@ defmodule ExGrids.Grid2D.Enum do
   end
 
   # TODO: remove when merged from create
-  def put(grid, coord, v) do
-    g = grid.grid |> Map.put(coord, v)
-    grid |> Map.put(:grid, g)
+  @doc """
+  Put a new value in the grid at a specific location. If the location
+  is outside of the bounds of the grid,  `ExGrids.BoundaryError` will
+  be raised. See also `ExGrids.Grid2D.Enum.put/4`.
+
+  ## Examples
+
+      iex> Grid2D.Create.new(width: 2, height: 2) |> Grid2D.Enum.put({1, 1}, :foo) |> Grid2D.Enum.at!({1, 1})
+      :foo
+
+      iex> Grid2D.Create.new(width: 2, height: 2) |> Grid2D.Enum.put({4, 1}, :foo) |> Grid2D.Enum.at!({1, 1})
+      ** (ExGrids.BoundaryError) The coordinate {4, 1} is outside the grid boundary {width: 2, height: 2}
+
+  """
+  def put(grid, {x, y}=coord, v) do
+    if contains_point?(grid, coord) do
+      g = grid.grid |> Map.put(coord, v)
+      grid |> Map.put(:grid, g)
+    else
+      raise ExGrids.BoundaryError, x: x, y: y, width: grid.width, height: grid.height
+    end
   end
+
+  @doc """
+  A convenience wrapper around `ExGrids.Grid2D.Enum.put/3`. Put a new
+  value into the grid, or raise an `ExGrids.BoundaryError` if the x/y
+  coordinate is outside the grid.
+
+  ## Examples
+
+      iex> Grid2D.Create.new(width: 2, height: 2) |> Grid2D.Enum.put(1, 1, :foo) |> Grid2D.Enum.at!({1, 1})
+      :foo
+
+      iex> Grid2D.Create.new(width: 2, height: 2) |> Grid2D.Enum.put(4, 1, :foo) |> Grid2D.Enum.at!({1, 1})
+      ** (ExGrids.BoundaryError) The coordinate {4, 1} is outside the grid boundary {width: 2, height: 2}
+
+  """
+  def put(grid, x, y, v), do: put(grid, {x, y}, v)
 
   # TODO: update to 1, 2, 3-arity versions
   def find_coordinates(%Grid2D{}=g, m_func) when is_function(m_func, 1) do
@@ -220,6 +254,7 @@ defmodule ExGrids.Grid2D.Enum do
     |> Enum.map(fn {coord, _value} -> coord end)
   end
 
+  # TODO: all the things
   def neighbors(%Grid2D{}=g, {x, y} = coord) do
     -1..1
     |> Enum.map(fn h_mod ->
