@@ -111,4 +111,63 @@ defmodule ExGrids.Grid2D.Create do
     end
 
   end
+
+  # TODO: improve documentation
+  # TODO: tests
+  # TODO: expand ways to convert from string
+  @doc """
+  Create a new Grid2D from the contents of a string.
+  """
+  def from_string(bin, :integer_cells) do
+
+    # generate lists
+    bin
+    |> String.split("\n", trim: true)
+    |> Enum.map(fn line -> String.split(line, "", trim: true) |> Enum.map(&String.to_integer/1) end)
+    |> grid_from_lists()
+
+  end
+
+  defp grid_from_lists(nested_lists) do
+
+    # setup the grid
+    w = nested_lists |> List.first() |> length()
+    h = length(nested_lists)
+    g = new(width: w, height: h)
+
+    # convert the list to coordinate groups
+    values = 0..(h - 1)
+    |> Enum.map(fn h_idx ->
+      row = nested_lists |> Enum.at(h_idx)
+      0..(w - 1)
+      |> Enum.map(fn w_idx ->
+        c = row |> Enum.at(w_idx)
+        {{w_idx, h_idx}, c}
+      end)
+    end)
+    |> List.flatten()
+
+    # inject
+    g |> inject_values(values)
+
+  end
+
+  # TODO: move to enum
+  # TODO: expose as public
+  # TODO: document
+  # TODO: tests
+  defp inject_values(grid, coord_val_pairs) when is_list(coord_val_pairs) do
+    coord_val_pairs
+    |> Enum.reduce(grid, fn {coord, value}, acc_grid -> put(acc_grid, coord, value) end)
+  end
+
+  # TODO: move to mutate
+  # TODO: make public
+  # TODO: document
+  # TODO: tests
+  defp put(grid, coord, v) do
+    g = grid.grid |> Map.put(coord, v)
+    grid |> Map.put(:grid, g)
+  end
+
 end

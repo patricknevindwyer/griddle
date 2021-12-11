@@ -176,4 +176,71 @@ defmodule ExGrids.Grid2D.Enum do
   """
   def contains_point?(%Grid2D{}=g, x, y), do: contains_point?(g, {x, y})
 
+  # TODO: all the things
+  # TODO: allow 1, 2, or 3 arity map function
+  @doc """
+  Map all of the values in a Grid2D using a function. The function is a
+  3-arity function that accepts `Grid2D, {x, y}, value` as the parameters.
+
+  ## Example
+
+      iex> Grid2D.Create.new(width: 3, height: 3) |> Grid2D.Enum.map(fn _g, _coord, v -> v + 42 end) |> Grid.Enum.at!(2, 2)
+      42
+
+  """
+  def map(%Grid2D{}=g, m_func) when is_function(m_func, 3) do
+
+    # gather coordinates and values
+    g
+    |> coordinates_and_values()
+    |> Enum.reduce(g, fn {coord, value}, grid_acc ->
+      new_value = m_func.(grid_acc, coord, value)
+      put(grid_acc, coord, new_value)
+    end)
+
+  end
+
+  defp coordinates_and_values(%Grid2D{}=g) do
+    g
+    |> coordinates()
+    |> Enum.map(fn coord -> {coord, at!(g, coord)} end)
+  end
+
+  # TODO: remove when merged from create
+  def put(grid, coord, v) do
+    g = grid.grid |> Map.put(coord, v)
+    grid |> Map.put(:grid, g)
+  end
+
+  # TODO: update to 1, 2, 3-arity versions
+  def find_coordinates(%Grid2D{}=g, m_func) when is_function(m_func, 1) do
+    g
+    |> coordinates_and_values()
+    |> Enum.filter(fn {_coord, value} -> m_func.(value) end)
+    |> Enum.map(fn {coord, _value} -> coord end)
+  end
+
+  def neighbors(%Grid2D{}=g, {x, y} = coord) do
+    -1..1
+    |> Enum.map(fn h_mod ->
+      -1..1
+      |> Enum.map(fn w_mod ->
+        {x + w_mod, y + h_mod}
+      end)
+    end)
+    |> List.flatten()
+    |> Enum.filter(fn n_coord ->
+      # must be in the grid and must not be ourself
+      (n_coord != coord) && contains_point?(g, n_coord)
+    end)
+  end
+
+  # TODO: update to 1, 2, 3-arity versions
+  # TODO: all the things
+  def all?(%Grid2D{}=g, p_func) do
+    g
+    |> coordinates_and_values()
+    |> Enum.map(fn {_c, v} -> p_func.(v) end)
+    |> Enum.all?()
+  end
 end
