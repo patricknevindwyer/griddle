@@ -68,6 +68,15 @@ defmodule ExGrids.Grid2DTest do
     test "negative height" do
       assert_raise ArgumentError, "Negative height", fn -> Grid2D.new(height: -3) end
     end
+
+    test "default value 1-arity function" do
+      g = Grid2D.new(width: 3, height: 3, default_value: fn {x, y} -> x * y + 3 end)
+      assert Grid2D.at!(g, 2, 2) == 7
+    end
+
+    test "improper 1-arity function causes problems" do
+      assert_raise ArgumentError, "Fill function should accept {x, y} value", fn -> Grid2D.new(width: 3, height: 3, default_value: fn {x, y, :foo} -> x * y + 3 end) end
+    end
   end
 
   describe "contains_point?/2" do
@@ -295,7 +304,7 @@ defmodule ExGrids.Grid2DTest do
       assert (Grid2D.new(width: 3, height: 3, default_value: 17) |> Grid2D.at(1, 3)) == nil
     end
   end
-  
+
   describe "at!/2" do
     test "empty grid" do
       assert_raise ArgumentError, fn -> (Grid2D.new(width: 0, height: 0, default_value: 17) |> Grid2D.at!({0, 0})) end

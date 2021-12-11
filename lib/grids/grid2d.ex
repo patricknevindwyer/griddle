@@ -21,24 +21,38 @@ defmodule ExGrids.Grid2D do
 
   # TODO: default_value as function (basically a pass through to fill)
   @doc """
-  Generate a new grid using sizing and default value options.
+  Generate a new grid using sizing and default value options. If the
+  specified width or height are negatives, the `new/1` method throws
+  an `ArgumentError`.
+
+  When called with a `default_value` option, the given value is used
+  as the fill value for every entry in the grid. If a 1-arity method
+  is given as the `default_value` it is invoked for every entry when
+  filling in the grid, as if calling `fill/2` on the grid.
 
   ## Options
 
-    - `width`
-    - `height`
-    - `default_value`
+    - `width` - Positive integer, default `0`
+    - `height` - Positive integer, default `0`
+    - `default_value` - Any. Value to store in all cells by default,
+                        or a 1-arity function to call for every cell
 
   ## Example
 
       iex> Grid2D.new(width: 7, height: 11) |> Grid2D.dimensions()
       {7, 11}
 
+      iex> Grid2D.new(width: -7, height: 11)
+      ** (ArgumentError) Negative width
+
       iex> Grid2D.new(width: 1, height: 1, default_value: 1)
       %Grid2D{width: 1, height: 1, grid: %{{0, 0} => 1}}
 
       iex> Grid2D.new(width: 1, height: 1, default_value: {:checked, 0, true})
       %Grid2D{width: 1, height: 1, grid: %{{0, 0} => {:checked, 0, true}}}
+
+      iex> Grid2D.new(width: 1, height: 1, default_value: fn {x, y} -> x + 3 + y + 7 end)
+      %Grid2D{width: 1, height: 1, grid: %{{0, 0} => 10}}
 
   """
   def new(opts) do
@@ -83,8 +97,14 @@ defmodule ExGrids.Grid2D do
 
       # wrap the default value in a 1-arity function
       Keyword.has_key?(opts, :default_value) ->
+
         d = opts |> Keyword.get(:default_value)
-        fn {_x, _y} -> d end
+
+        if is_function(d, 1) do
+          d
+        else
+          fn {_x, _y} -> d end
+        end
 
       # we're inserting 0 as the default value
       true ->
@@ -134,6 +154,9 @@ defmodule ExGrids.Grid2D do
        )
 
     grid |> Map.put(:grid, updated_grid)
+
+  rescue
+    _fce in [FunctionClauseError] -> reraise ArgumentError, "Fill function should accept {x, y} value", __STACKTRACE__
   end
 
   def fill(%Grid2D{}=grid, v) do
