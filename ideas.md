@@ -64,6 +64,11 @@ Methods
  - rotate
  - select sub grid
  - select with Excel style identifiers
+ - trim
+ - grow
+ - add row
+ - add column
+ - shift (move values in x/y plane)
  
  ExGrids.2d.Enum
 
@@ -78,9 +83,6 @@ Methods
  - drop row if
  - drop column
  - drop column if
- - add row
- - add column
- - shift (move values in x/y plane)
  - neighbors() (options for values at edges)
  - get/set/at
  - select row
