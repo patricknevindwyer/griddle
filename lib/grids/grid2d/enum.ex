@@ -176,16 +176,28 @@ defmodule ExGrids.Grid2D.Enum do
   """
   def contains_point?(%Grid2D{}=g, x, y), do: contains_point?(g, {x, y})
 
-  # TODO: all the things
-  # TODO: allow 1, 2, or 3 arity map function
+  # TODO: document the 3 different arity options
+  # TODO: add doc test examples of all three arities
   @doc """
-  Map all of the values in a Grid2D using a function. The function is a
-  3-arity function that accepts `Grid2D, {x, y}, value` as the parameters.
+  Map all of the values in a Grid2D using a function. The grid is mutated during
+  the map, so each call to the map function can see previously updated values.
 
-  ## Example
+  The passed function can be a 1-arity, 2-arity, or 3-arity function:
 
-      iex> Grid2D.Create.new(width: 3, height: 3) |> Grid2D.Enum.map(fn _g, _coord, v -> v + 42 end) |> Grid2D.Enum.at!(2, 2)
-      42
+   - *1-arity* - Parameter is the cell value to map
+   - *2-arity* - Paremeters are `{x, y}` coordinate, and value to map
+   - *3-arity* - Parameters are the mutated grid, the `{x, y}` coordinate, and the value to map
+
+  ## Examples
+
+      iex> Grid2D.Create.new(width: 3, height: 3) |> Grid2D.Enum.map(fn v -> {v, v + 42} end) |> Grid2D.Enum.at!(2, 2)
+      {0, 42}
+
+      iex> Grid2D.Create.new(width: 3, height: 3) |> Grid2D.Enum.map(fn _g, {x, y}, v -> (x + y) * (v + 3) end) |> Grid2D.Enum.at!(2, 2)
+      12
+
+      iex> Grid2D.Create.new(width: 3, height: 3) |> Grid2D.Enum.map(fn g, {x, y}, v -> (g |> Grid2D.Enum.at!({0, 0})) + (x * y + v + 3) end) |> Grid2D.Enum.at!(2, 2)
+      10
 
   """
   def map(%Grid2D{}=g, m_func) when is_function(m_func, 3) do
@@ -200,13 +212,36 @@ defmodule ExGrids.Grid2D.Enum do
 
   end
 
+  def map(%Grid2D{}=g, m_func) when is_function(m_func, 2) do
+
+    # gather coordinates and values
+    g
+    |> coordinates_and_values()
+    |> Enum.reduce(g, fn {coord, value}, grid_acc ->
+      new_value = m_func.(coord, value)
+      put(grid_acc, coord, new_value)
+    end)
+
+  end
+
+  def map(%Grid2D{}=g, m_func) when is_function(m_func, 1) do
+
+    # gather coordinates and values
+    g
+    |> coordinates_and_values()
+    |> Enum.reduce(g, fn {coord, value}, grid_acc ->
+      new_value = m_func.(value)
+      put(grid_acc, coord, new_value)
+    end)
+
+  end
+
   defp coordinates_and_values(%Grid2D{}=g) do
     g
     |> coordinates()
     |> Enum.map(fn coord -> {coord, at!(g, coord)} end)
   end
-
-  # TODO: remove when merged from create
+  
   @doc """
   Put a new value in the grid at a specific location. If the location
   is outside of the bounds of the grid,  `ExGrids.Errors.BoundaryError` will

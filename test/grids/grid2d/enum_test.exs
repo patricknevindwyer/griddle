@@ -477,4 +477,240 @@ defmodule ExGrids.Grid2D.EnumTest do
       end
     end
   end
+
+  describe "map/2 - 3-arity" do
+
+    test "emtpy grid" do
+
+      # map returns a grid
+      assert %Grid2D{} = u_grid = Grid2D.Create.new()
+      |> Grid2D.Enum.map(fn _grid, _coord, _value -> :ok end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {0, 0}
+    end
+
+    test "values passed" do
+
+      # map returns a grid
+      assert %Grid2D{} = u_grid = """
+      123
+      456
+      789
+      """
+      |> Grid2D.Create.from_string(:integer_cells)
+      |> Grid2D.Enum.map(fn _grid, _coord, value -> value * 2 end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {3, 3}
+
+      # value samples
+      assert Grid2D.Enum.at!(u_grid, {0, 0}) == 2
+      assert Grid2D.Enum.at!(u_grid, {1, 1}) == 10
+      assert Grid2D.Enum.at!(u_grid, {2, 2}) == 18
+
+    end
+
+    test "coordinates passed" do
+
+      # map returns a grid
+      assert %Grid2D{} = u_grid = """
+                                 123
+                                 456
+                                 789
+                                 """
+                                 |> Grid2D.Create.from_string(:integer_cells)
+                                 |> Grid2D.Enum.map(fn _grid, {x, y}, _value -> x * y * 2 end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {3, 3}
+
+      # value samples
+      assert Grid2D.Enum.at!(u_grid, {0, 0}) == 0
+      assert Grid2D.Enum.at!(u_grid, {1, 1}) == 2
+      assert Grid2D.Enum.at!(u_grid, {2, 2}) == 8
+
+    end
+
+    test "grid mutates" do
+
+      # map returns a grid
+      assert %Grid2D{} = u_grid = """
+                                 123
+                                 456
+                                 789
+                                 """
+                                 |> Grid2D.Create.from_string(:integer_cells)
+                                 |> Grid2D.Enum.map(
+                                      fn grid, {x, y}, _value ->
+                                        if (x > 0) && (y > 0) do
+                                          grid |> Grid2D.Enum.at!({0, 0})
+                                        else
+                                          42
+                                        end
+                                      end
+                                    )
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {3, 3}
+
+      # value samples
+      assert Grid2D.Enum.at!(u_grid, {0, 0}) == 42
+      assert Grid2D.Enum.at!(u_grid, {1, 1}) == 42
+      assert Grid2D.Enum.at!(u_grid, {2, 2}) == 42
+
+    end
+
+    test "alternate value shape returned" do
+      # map returns a grid
+      assert %Grid2D{} = u_grid = """
+                                 123
+                                 456
+                                 789
+                                 """
+                                 |> Grid2D.Create.from_string(:integer_cells)
+                                 |> Grid2D.Enum.map(fn _grid, _coord, value -> {true, value * 3, [1, 2, 3]} end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {3, 3}
+
+      # value samples
+      assert Grid2D.Enum.at!(u_grid, {0, 0}) == {true, 3, [1, 2, 3]}
+      assert Grid2D.Enum.at!(u_grid, {1, 1}) == {true, 15, [1, 2, 3]}
+      assert Grid2D.Enum.at!(u_grid, {2, 2}) == {true, 27, [1, 2, 3]}
+
+    end
+
+  end
+
+  describe "map/2 - 2-arity" do
+
+    test "emtpy grid" do
+
+      # map returns a grid
+      assert %Grid2D{} = u_grid = Grid2D.Create.new()
+                                  |> Grid2D.Enum.map(fn _coord, _value -> :ok end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {0, 0}
+    end
+
+    test "values passed" do
+
+      # map returns a grid
+      assert %Grid2D{} = u_grid = """
+                                  123
+                                  456
+                                  789
+                                  """
+                                  |> Grid2D.Create.from_string(:integer_cells)
+                                  |> Grid2D.Enum.map(fn _coord, value -> value * 2 end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {3, 3}
+
+      # value samples
+      assert Grid2D.Enum.at!(u_grid, {0, 0}) == 2
+      assert Grid2D.Enum.at!(u_grid, {1, 1}) == 10
+      assert Grid2D.Enum.at!(u_grid, {2, 2}) == 18
+
+    end
+
+    test "coordinates passed" do
+
+      # map returns a grid
+      assert %Grid2D{} = u_grid = """
+                                  123
+                                  456
+                                  789
+                                  """
+                                  |> Grid2D.Create.from_string(:integer_cells)
+                                  |> Grid2D.Enum.map(fn {x, y}, _value -> x * y * 2 end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {3, 3}
+
+      # value samples
+      assert Grid2D.Enum.at!(u_grid, {0, 0}) == 0
+      assert Grid2D.Enum.at!(u_grid, {1, 1}) == 2
+      assert Grid2D.Enum.at!(u_grid, {2, 2}) == 8
+
+    end
+
+    test "alternate value shape returned" do
+      # map returns a grid
+      assert %Grid2D{} = u_grid = """
+                                  123
+                                  456
+                                  789
+                                  """
+                                  |> Grid2D.Create.from_string(:integer_cells)
+                                  |> Grid2D.Enum.map(fn _coord, value -> {true, value * 3, [1, 2, 3]} end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {3, 3}
+
+      # value samples
+      assert Grid2D.Enum.at!(u_grid, {0, 0}) == {true, 3, [1, 2, 3]}
+      assert Grid2D.Enum.at!(u_grid, {1, 1}) == {true, 15, [1, 2, 3]}
+      assert Grid2D.Enum.at!(u_grid, {2, 2}) == {true, 27, [1, 2, 3]}
+
+    end
+
+  end
+
+  describe "map/2 - 1-arity" do
+    test "emtpy grid" do
+
+      # map returns a grid
+      assert %Grid2D{} = u_grid = Grid2D.Create.new()
+                                  |> Grid2D.Enum.map(fn _value -> :ok end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {0, 0}
+    end
+
+    test "values passed" do
+
+      # map returns a grid
+      assert %Grid2D{} = u_grid = """
+                                  123
+                                  456
+                                  789
+                                  """
+                                  |> Grid2D.Create.from_string(:integer_cells)
+                                  |> Grid2D.Enum.map(fn value -> value * 2 end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {3, 3}
+
+      # value samples
+      assert Grid2D.Enum.at!(u_grid, {0, 0}) == 2
+      assert Grid2D.Enum.at!(u_grid, {1, 1}) == 10
+      assert Grid2D.Enum.at!(u_grid, {2, 2}) == 18
+
+    end
+
+    test "alternate value shape returned" do
+      # map returns a grid
+      assert %Grid2D{} = u_grid = """
+                                  123
+                                  456
+                                  789
+                                  """
+                                  |> Grid2D.Create.from_string(:integer_cells)
+                                  |> Grid2D.Enum.map(fn value -> {true, value * 3, [1, 2, 3]} end)
+
+      # shape
+      assert Grid2D.Enum.dimensions(u_grid) == {3, 3}
+
+      # value samples
+      assert Grid2D.Enum.at!(u_grid, {0, 0}) == {true, 3, [1, 2, 3]}
+      assert Grid2D.Enum.at!(u_grid, {1, 1}) == {true, 15, [1, 2, 3]}
+      assert Grid2D.Enum.at!(u_grid, {2, 2}) == {true, 27, [1, 2, 3]}
+
+    end
+
+  end
+
 end
