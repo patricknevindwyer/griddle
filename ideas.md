@@ -21,8 +21,10 @@ Methods
  ExGrids.2d
  
  - [x] new()
- - read!(file)
- - from_string()
+ - [-] read!(file)
+ - [x] from_string()
+ - from string, csv style
+ - from string, csv style, custom value mutation
  - from list!(with dimensions)
  - from list(with dimensions, with default)
  - from list(with dimensions, discard incomplete rows?)
@@ -52,13 +54,11 @@ Methods
   - predefined kernel filter functions
    - minima
    - maxima  	
+ - update to new grid (automata style) (move to kernels)
+ - update to new grid _with_ neighbor data (move to kernels)
  
  ExGrids.2d.Modify
  
- - update to new grid (automata style) (move to kernels)
- - update to new grid _with_ neighbor data (move to kernels)
- - update(grid, update function)
- - update_when(grid, filter function, update function)
  - intersect grids (only overlap)
  - union grids (shape to full size, default value function)
  - rotate
@@ -69,9 +69,16 @@ Methods
  - add row
  - add column
  - shift (move values in x/y plane)
+ - drop row
+ - drop row if
+ - drop column
+ - drop column if
  
  ExGrids.2d.Enum
 
+ - [x] map(grid, update function)
+ - update(grid, update function)
+ - update_when(grid, filter function, update function)
  - row iterator
  - column iterator
  - cells()
@@ -79,12 +86,8 @@ Methods
  - any?() - cells/rows/columns
  - none?() - cells/rows/columns
  - trim
- - drop row
- - drop row if
- - drop column
- - drop column if
  - neighbors() (options for values at edges)
- - get/set/at
+ - [x] get/set/at
  - select row
  - select column
  - get diagonal(s)

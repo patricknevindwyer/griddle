@@ -7,18 +7,9 @@ defmodule ExGrids.Grid2D.Create do
   import ExGrids.Grid2D.Mutate, only: [fill: 2]
   import ExGrids.Grid2D.Enum, only: [put: 3]
 
-  @doc """
-  Generate a new, empty grid. This is a zero width, zero height
-  grid.
+  # TODO: Carry typing/setup info along with a grid (like :integer_cells or :character_cells)
+  #       and use this to pick things like display functions
 
-  ## Example
-
-      iex> Create.new()
-      %Grid2D{width: 0, height: 0}
-  """
-  def new() do
-    %Grid2D{width: 0, height: 0, xoffset: 0, yoffset: 0, grid: %{}}
-  end
 
   @doc """
   Generate a new grid using sizing and default value options. If the
@@ -113,9 +104,6 @@ defmodule ExGrids.Grid2D.Create do
 
   end
 
-  # TODO: improve documentation
-  # TODO: tests
-  # TODO: expand ways to convert from string
   @doc """
   Create a new Grid2D from the contents of a string. This function has multiple
   modes to parse strings of different shapes and sizes.
@@ -128,6 +116,7 @@ defmodule ExGrids.Grid2D.Create do
   The following modes are supported:
 
     - `:integer_cells` - Flat, compact single integer layout
+    - `:character_cells` - Flat, compact single character layout
 
   ### `:integer_cells`
 
@@ -140,7 +129,7 @@ defmodule ExGrids.Grid2D.Create do
   9876
   ```
 
-  can be loaded with:
+  #### Examples
 
       iex> Create.from_string("1234\\n5678\\n9876", :integer_cells) |> Grid2D.Enum.dimensions()
       {4, 3}
@@ -148,6 +137,22 @@ defmodule ExGrids.Grid2D.Create do
       iex> Create.from_string("1234\\n5678\\n9876", :integer_cells) |> Grid2D.Enum.at!({2, 1})
       7
 
+  ### `:character_cells`
+
+  This mode parses characters packed together, with newline delimited rows. For
+  example, a grid of hashes and dots:
+
+  ```
+  #.##..
+  #...#.
+  ......
+  #...#.
+  ```
+
+  #### Examples
+
+      iex> Create.from_string("#.##..\\n#...#.\\n......\\n#...#.\\n", :character_cells) |> Grid2D.Enum.at!({4, 1})
+      "#"
   """
   def from_string(bin, :integer_cells) do
 
@@ -178,6 +183,31 @@ defmodule ExGrids.Grid2D.Create do
 
   rescue
     _e in [ArgumentError] -> reraise ExGrids.Errors.FormatError, [message: "Formatting issue with integer cells"], __STACKTRACE__
+  end
+
+  def from_string(bin, :character_cells) do
+    # generate lists of lines
+    bin
+    |> String.split("\n", trim: true)
+
+      # strip empty lines
+    |> Enum.filter(fn line -> String.trim(line) != "" end)
+
+      # convert to rows of ints
+    |> Enum.map(fn line ->
+
+      # trim whit space
+      line
+      |> String.trim()
+
+        # split to cells
+      |> String.split("", trim: true)
+
+        # drop empty cells
+      |> Enum.filter(fn c -> String.trim(c) != "" end)
+
+    end)
+    |> grid_from_lists()
   end
 
   defp grid_from_lists(nested_lists) do

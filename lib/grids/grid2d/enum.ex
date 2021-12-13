@@ -236,12 +236,15 @@ defmodule ExGrids.Grid2D.Enum do
 
   end
 
-  defp coordinates_and_values(%Grid2D{}=g) do
+  # TODO: document
+  # TODO: tests
+  # TODO: make more resilient
+  def coordinates_and_values(%Grid2D{}=g) do
     g
     |> coordinates()
     |> Enum.map(fn coord -> {coord, at!(g, coord)} end)
   end
-  
+
   @doc """
   Put a new value in the grid at a specific location. If the location
   is outside of the bounds of the grid,  `ExGrids.Errors.BoundaryError` will
