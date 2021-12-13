@@ -335,25 +335,25 @@ defmodule ExGrids.Grid2D.EnumTest do
   describe "put/3" do
 
     test "empty grid" do
-      assert_raise ExGrids.BoundaryError, fn -> Grid2D.Create.new() |> Grid2D.Enum.put({1, 1}, 42) end
+      assert_raise ExGrids.Errors.BoundaryError, fn -> Grid2D.Create.new() |> Grid2D.Enum.put({1, 1}, 42) end
     end
 
     test "zero width" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 0, height: 3)
         |> Grid2D.Enum.put({1, 1}, 42)
       end
     end
 
     test "zero height" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 3, height: 0)
         |> Grid2D.Enum.put({1, 1}, 42)
       end
     end
 
     test "negative x" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 3, height: 3)
         |> Grid2D.Enum.put({-1, 1}, 42)
       end
@@ -372,14 +372,14 @@ defmodule ExGrids.Grid2D.EnumTest do
     end
 
     test "outside width" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 3, height: 3)
         |> Grid2D.Enum.put({3, 1}, 42)
       end
     end
 
     test "negative y" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 3, height: 3)
         |> Grid2D.Enum.put({1, -1}, 42)
       end
@@ -398,7 +398,7 @@ defmodule ExGrids.Grid2D.EnumTest do
     end
 
     test "outside height" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 3, height: 3)
         |> Grid2D.Enum.put({1, 3}, 42)
       end
@@ -408,25 +408,25 @@ defmodule ExGrids.Grid2D.EnumTest do
 
   describe "put/4" do
     test "empty grid" do
-      assert_raise ExGrids.BoundaryError, fn -> Grid2D.Create.new() |> Grid2D.Enum.put(1, 1, 42) end
+      assert_raise ExGrids.Errors.BoundaryError, fn -> Grid2D.Create.new() |> Grid2D.Enum.put(1, 1, 42) end
     end
 
     test "zero width" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 0, height: 3)
         |> Grid2D.Enum.put(1, 1, 42)
       end
     end
 
     test "zero height" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 3, height: 0)
         |> Grid2D.Enum.put(1, 1, 42)
       end
     end
 
     test "negative x" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 3, height: 3)
         |> Grid2D.Enum.put(-1, 1, 42)
       end
@@ -445,14 +445,14 @@ defmodule ExGrids.Grid2D.EnumTest do
     end
 
     test "outside width" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 3, height: 3)
         |> Grid2D.Enum.put(3, 1, 42)
       end
     end
 
     test "negative y" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 3, height: 3)
         |> Grid2D.Enum.put(1, -1, 42)
       end
@@ -471,7 +471,7 @@ defmodule ExGrids.Grid2D.EnumTest do
     end
 
     test "outside height" do
-      assert_raise ExGrids.BoundaryError, fn ->
+      assert_raise ExGrids.Errors.BoundaryError, fn ->
         Grid2D.Create.new(width: 3, height: 3)
         |> Grid2D.Enum.put(1, 3, 42)
       end

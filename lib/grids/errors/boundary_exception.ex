@@ -1,4 +1,4 @@
-defmodule ExGrids.BoundaryError do
+defmodule ExGrids.Errors.BoundaryError do
   defexception [width: 0, height: 0, x: 0, y: 0]
 
   @impl true

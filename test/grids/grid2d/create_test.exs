@@ -80,5 +80,214 @@ defmodule ExGrids.Grid2D.CreateTest do
     end
   end
 
+  describe "from_string/2" do
+    test "single row, single cell" do
+
+      # create
+      assert %Grid2D{} = g = """
+      1
+      """
+      |> Create.from_string(:integer_cells)
+
+      # shape
+      assert Grid2D.Enum.dimensions(g) == {1, 1}
+
+      # value
+      assert Grid2D.Enum.at!(g, {0, 0}) == 1
+
+    end
+
+    test "single row, multiple cells" do
+      # create
+      assert %Grid2D{} = g = """
+                             7654
+                             """
+                             |> Create.from_string(:integer_cells)
+
+      # shape
+      assert Grid2D.Enum.dimensions(g) == {4, 1}
+
+      # value
+      assert Grid2D.Enum.at!(g, {2, 0}) == 5
+    end
+
+    test "multiple rows, single column" do
+      # create
+      assert %Grid2D{} = g = """
+                             7
+                             6
+                             5
+                             4
+                             """
+                             |> Create.from_string(:integer_cells)
+
+      # shape
+      assert Grid2D.Enum.dimensions(g) == {1, 4}
+
+      # value
+      assert Grid2D.Enum.at!(g, {0, 3}) == 4
+    end
+
+    test "5x5" do
+      # create
+      assert %Grid2D{} = g = """
+                             76543
+                             65432
+                             56789
+                             45678
+                             12345
+                             """
+                             |> Create.from_string(:integer_cells)
+
+      # shape
+      assert Grid2D.Enum.dimensions(g) == {5, 5}
+
+      # value
+      assert Grid2D.Enum.at!(g, {3, 3}) == 7
+      assert Grid2D.Enum.at!(g, {1, 1}) == 5
+
+    end
+
+    test "non-integer cell" do
+      assert_raise ExGrids.Errors.FormatError,
+                   fn ->
+                     """
+                     76543
+                     65432
+                     5678b
+                     45d78
+                     12345
+                     """
+                     |> Create.from_string(:integer_cells)
+                   end
+    end
+
+    test "trailing blank/newline" do
+      # create
+      assert %Grid2D{} = g = """
+                             76543
+                             65432
+                             56789
+                             45678
+                             12345
+
+
+                             """
+                             |> Create.from_string(:integer_cells)
+
+      # shape
+      assert Grid2D.Enum.dimensions(g) == {5, 5}
+
+      # value
+      assert Grid2D.Enum.at!(g, {3, 3}) == 7
+      assert Grid2D.Enum.at!(g, {1, 1}) == 5
+
+    end
+
+    test "leading newlines" do
+      # create
+      assert %Grid2D{} = g = """
+
+
+                             76543
+                             65432
+                             56789
+                             45678
+                             12345
+                             """
+                             |> Create.from_string(:integer_cells)
+
+      # shape
+      assert Grid2D.Enum.dimensions(g) == {5, 5}
+
+      # value
+      assert Grid2D.Enum.at!(g, {3, 3}) == 7
+      assert Grid2D.Enum.at!(g, {1, 1}) == 5
+    end
+
+    test "leading whitespace" do
+      # create
+      assert %Grid2D{} = g = """
+                             76543
+                              65432
+                              56789
+                              45678
+                              12345
+                             """
+                             |> Create.from_string(:integer_cells)
+
+      # shape
+      assert Grid2D.Enum.dimensions(g) == {5, 5}
+
+      # value
+      assert Grid2D.Enum.at!(g, {3, 3}) == 7
+      assert Grid2D.Enum.at!(g, {1, 1}) == 5
+
+    end
+
+    test "trailing whitespace" do
+      # create
+      assert %Grid2D{} = g = """
+                             76543
+                             65432
+                             56789
+                             45678
+                             12345
+                             """
+                             |> Create.from_string(:integer_cells)
+
+      # shape
+      assert Grid2D.Enum.dimensions(g) == {5, 5}
+
+      # value
+      assert Grid2D.Enum.at!(g, {3, 3}) == 7
+      assert Grid2D.Enum.at!(g, {1, 1}) == 5
+
+    end
+
+    test "spaces between cells" do
+      # create
+      assert %Grid2D{} = g = """
+                             7 6 5 4 3
+                             6 5 4 3 2
+                             5 6 7 8 9
+                             4 5 6 7 8
+                             1 2 3 4 5
+                             """
+                             |> Create.from_string(:integer_cells)
+
+      # shape
+      assert Grid2D.Enum.dimensions(g) == {5, 5}
+
+      # value
+      assert Grid2D.Enum.at!(g, {3, 3}) == 7
+      assert Grid2D.Enum.at!(g, {1, 1}) == 5
+
+    end
+
+    test "hella messy" do
+      # create
+      assert %Grid2D{} = g = """
+
+
+                             76543
+                             6 5 432
+                             567 8 9
+
+                             45 6 78
+                             1 2345
+
+                             """
+                             |> Create.from_string(:integer_cells)
+
+      # shape
+      assert Grid2D.Enum.dimensions(g) == {5, 5}
+
+      # value
+      assert Grid2D.Enum.at!(g, {3, 3}) == 7
+      assert Grid2D.Enum.at!(g, {1, 1}) == 5
+
+    end
+  end
 
 end

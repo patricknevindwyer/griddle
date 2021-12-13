@@ -209,7 +209,7 @@ defmodule ExGrids.Grid2D.Enum do
   # TODO: remove when merged from create
   @doc """
   Put a new value in the grid at a specific location. If the location
-  is outside of the bounds of the grid,  `ExGrids.BoundaryError` will
+  is outside of the bounds of the grid,  `ExGrids.Errors.BoundaryError` will
   be raised. See also `ExGrids.Grid2D.Enum.put/4`.
 
   ## Examples
@@ -218,7 +218,7 @@ defmodule ExGrids.Grid2D.Enum do
       :foo
 
       iex> Grid2D.Create.new(width: 2, height: 2) |> Grid2D.Enum.put({4, 1}, :foo) |> Grid2D.Enum.at!({1, 1})
-      ** (ExGrids.BoundaryError) The coordinate {4, 1} is outside the grid boundary {width: 2, height: 2}
+      ** (ExGrids.Errors.BoundaryError) The coordinate {4, 1} is outside the grid boundary {width: 2, height: 2}
 
   """
   def put(grid, {x, y}=coord, v) do
@@ -226,13 +226,13 @@ defmodule ExGrids.Grid2D.Enum do
       g = grid.grid |> Map.put(coord, v)
       grid |> Map.put(:grid, g)
     else
-      raise ExGrids.BoundaryError, x: x, y: y, width: grid.width, height: grid.height
+      raise ExGrids.Errors.BoundaryError, x: x, y: y, width: grid.width, height: grid.height
     end
   end
 
   @doc """
   A convenience wrapper around `ExGrids.Grid2D.Enum.put/3`. Put a new
-  value into the grid, or raise an `ExGrids.BoundaryError` if the x/y
+  value into the grid, or raise an `ExGrids.Errors.BoundaryError` if the x/y
   coordinate is outside the grid.
 
   ## Examples
@@ -241,7 +241,7 @@ defmodule ExGrids.Grid2D.Enum do
       :foo
 
       iex> Grid2D.Create.new(width: 2, height: 2) |> Grid2D.Enum.put(4, 1, :foo) |> Grid2D.Enum.at!({1, 1})
-      ** (ExGrids.BoundaryError) The coordinate {4, 1} is outside the grid boundary {width: 2, height: 2}
+      ** (ExGrids.Errors.BoundaryError) The coordinate {4, 1} is outside the grid boundary {width: 2, height: 2}
 
   """
   def put(grid, x, y, v), do: put(grid, {x, y}, v)

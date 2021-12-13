@@ -117,16 +117,67 @@ defmodule ExGrids.Grid2D.Create do
   # TODO: tests
   # TODO: expand ways to convert from string
   @doc """
-  Create a new Grid2D from the contents of a string.
+  Create a new Grid2D from the contents of a string. This function has multiple
+  modes to parse strings of different shapes and sizes.
+
+  ## Modes
+
+  Each mode is distinguished with either a single atom, or a keyword list which
+  contains distinct settings for a run time mode.
+
+  The following modes are supported:
+
+    - `:integer_cells` - Flat, compact single integer layout
+
+  ### `:integer_cells`
+
+  This mode parses single digit integer values packed together, with delimiters
+  for rows as newlines. For example, a grid with 3 rows, with 4 values per row:
+
+  ```
+  1234
+  5678
+  9876
+  ```
+
+  can be loaded with:
+
+      iex> Create.from_string("1234\\n5678\\n9876", :integer_cells) |> Grid2D.Enum.dimensions()
+      {4, 3}
+
+      iex> Create.from_string("1234\\n5678\\n9876", :integer_cells) |> Grid2D.Enum.at!({2, 1})
+      7
+
   """
   def from_string(bin, :integer_cells) do
 
-    # generate lists
+    # generate lists of lines
     bin
     |> String.split("\n", trim: true)
-    |> Enum.map(fn line -> String.split(line, "", trim: true) |> Enum.map(&String.to_integer/1) end)
+
+    # strip empty lines
+    |> Enum.filter(fn line -> String.trim(line) != "" end)
+
+    # convert to rows of ints
+    |> Enum.map(fn line ->
+
+      # trim whit space
+      line
+      |> String.trim()
+
+      # split to cells
+      |> String.split("", trim: true)
+
+      # drop empty cells
+      |> Enum.filter(fn c -> String.trim(c) != "" end)
+
+      # convert to integers
+      |> Enum.map(&String.to_integer/1)
+    end)
     |> grid_from_lists()
 
+  rescue
+    _e in [ArgumentError] -> reraise ExGrids.Errors.FormatError, [message: "Formatting issue with integer cells"], __STACKTRACE__
   end
 
   defp grid_from_lists(nested_lists) do
