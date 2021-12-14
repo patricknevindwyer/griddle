@@ -13,7 +13,7 @@ defmodule ExGrids.Grid2D do
 
   ## Example
 
-      iex> Create.new()
+      iex> Grid2D.new()
       %Grid2D{width: 0, height: 0}
   """
   def new() do

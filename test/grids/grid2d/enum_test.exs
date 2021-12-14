@@ -7,7 +7,7 @@ defmodule ExGrids.Grid2D.EnumTest do
   # TODO: Replace all uses of ArgumentError with BoundaryError where appropriate
   describe "coordinates/1" do
     test "empty grid" do
-      assert (Grid2D.Create.new() |> Enum.coordinates()) == []
+      assert (Grid2D.new() |> Enum.coordinates()) == []
     end
 
     test "0 width" do
@@ -335,7 +335,7 @@ defmodule ExGrids.Grid2D.EnumTest do
   describe "put/3" do
 
     test "empty grid" do
-      assert_raise ExGrids.Errors.BoundaryError, fn -> Grid2D.Create.new() |> Grid2D.Enum.put({1, 1}, 42) end
+      assert_raise ExGrids.Errors.BoundaryError, fn -> Grid2D.new() |> Grid2D.Enum.put({1, 1}, 42) end
     end
 
     test "zero width" do
@@ -408,7 +408,7 @@ defmodule ExGrids.Grid2D.EnumTest do
 
   describe "put/4" do
     test "empty grid" do
-      assert_raise ExGrids.Errors.BoundaryError, fn -> Grid2D.Create.new() |> Grid2D.Enum.put(1, 1, 42) end
+      assert_raise ExGrids.Errors.BoundaryError, fn -> Grid2D.new() |> Grid2D.Enum.put(1, 1, 42) end
     end
 
     test "zero width" do
@@ -483,7 +483,7 @@ defmodule ExGrids.Grid2D.EnumTest do
     test "emtpy grid" do
 
       # map returns a grid
-      assert %Grid2D{} = u_grid = Grid2D.Create.new()
+      assert %Grid2D{} = u_grid = Grid2D.new()
       |> Grid2D.Enum.map(fn _grid, _coord, _value -> :ok end)
 
       # shape
@@ -588,7 +588,7 @@ defmodule ExGrids.Grid2D.EnumTest do
     test "emtpy grid" do
 
       # map returns a grid
-      assert %Grid2D{} = u_grid = Grid2D.Create.new()
+      assert %Grid2D{} = u_grid = Grid2D.new()
                                   |> Grid2D.Enum.map(fn _coord, _value -> :ok end)
 
       # shape
@@ -663,7 +663,7 @@ defmodule ExGrids.Grid2D.EnumTest do
     test "emtpy grid" do
 
       # map returns a grid
-      assert %Grid2D{} = u_grid = Grid2D.Create.new()
+      assert %Grid2D{} = u_grid = Grid2D.new()
                                   |> Grid2D.Enum.map(fn _value -> :ok end)
 
       # shape

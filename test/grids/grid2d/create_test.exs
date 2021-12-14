@@ -4,20 +4,6 @@ defmodule ExGrids.Grid2D.CreateTest do
   alias ExGrids.Grid2D.Create
   doctest ExGrids.Grid2D.Create
 
-  describe "new/0" do
-
-    test "default values" do
-      g = Create.new()
-
-      assert g.width == 0
-      assert g.height == 0
-      assert g.xoffset == 0
-      assert g.yoffset == 0
-      assert g.grid == %{}
-    end
-
-  end
-
   describe "new/1" do
 
     test "default width" do

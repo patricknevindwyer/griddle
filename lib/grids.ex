@@ -6,7 +6,7 @@ defmodule ExGrids do
 
   You can create an empty grid with:
 
-      iex> ExGrids.Grid2D.Create.new()
+      iex> ExGrids.Grid2D.new()
       %Grid2D{width: 0, height: 0, grid: %{}}
 
   But empty grids aren't all that interesting. Let's create a bigger
