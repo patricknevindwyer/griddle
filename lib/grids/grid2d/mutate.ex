@@ -173,6 +173,8 @@ defmodule ExGrids.Grid2D.Mutate do
 
   end
 
+  # TODO: tests
+  # TODO: more documentation
   @doc """
   Split a grid into two new grids, horizontally or vertically. The cut drops an
   actual row or column from the grid along the cut line.
@@ -243,6 +245,8 @@ defmodule ExGrids.Grid2D.Mutate do
     {grid_top, grid_bottom}
   end
 
+  # TODO: Tests
+  # TODO: more documentation
   @doc """
   Flip a grid either vertically or horizontally.
 
@@ -292,6 +296,7 @@ defmodule ExGrids.Grid2D.Mutate do
   # TODO: document
   # TODO: tests
   # TODO: extend to shifts > 1
+  # TODO: add alias for single shift?
   def shift(grid, direction, count, default_value \\ 0)
   def shift(%Grid2D{width: w, height: h}=og, :right, count, default_value) do
 
@@ -352,6 +357,7 @@ defmodule ExGrids.Grid2D.Mutate do
 
   # TODO: add tests
   # TODO: add documentation
+  # TODO: Extend with further testing for format
   def inject_values(grid, coord_val_pairs) when is_list(coord_val_pairs) do
     coord_val_pairs
     |> Enum.reduce(grid, fn {coord, value}, acc_grid -> put(acc_grid, coord, value) end)

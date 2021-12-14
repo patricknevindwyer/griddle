@@ -285,6 +285,8 @@ defmodule ExGrids.Grid2D.Enum do
   def put(grid, x, y, v), do: put(grid, {x, y}, v)
 
   # TODO: update to 1, 2, 3-arity versions
+  # TODO: document
+  # TODO: tests
   def find_coordinates(%Grid2D{}=g, m_func) when is_function(m_func, 1) do
     g
     |> coordinates_and_values()
@@ -292,7 +294,9 @@ defmodule ExGrids.Grid2D.Enum do
     |> Enum.map(fn {coord, _value} -> coord end)
   end
 
-  # TODO: all the things
+  # TODO: document
+  # TODO: tests
+  # TODO: update to neighbors/3 (grid, coordinate, [style, edge options])
   def neighbors(%Grid2D{}=g, {x, y} = coord) do
     -1..1
     |> Enum.map(fn h_mod ->
@@ -309,7 +313,8 @@ defmodule ExGrids.Grid2D.Enum do
   end
 
   # TODO: update to 1, 2, 3-arity versions
-  # TODO: all the things
+  # TODO: document
+  # TODO: test
   def all?(%Grid2D{}=g, p_func) do
     g
     |> coordinates_and_values()
