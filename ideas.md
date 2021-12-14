@@ -57,7 +57,7 @@ Methods
  - update to new grid (automata style) (move to kernels)
  - update to new grid _with_ neighbor data (move to kernels)
  
- ExGrids.2d.Modify
+ ExGrids.2d.Mutate
  
  - intersect grids (only overlap)
  - union grids (shape to full size, default value function)
@@ -68,7 +68,7 @@ Methods
  - grow
  - add row
  - add column
- - shift (move values in x/y plane)
+ - [x] shift (move values in x/y plane)
  - drop row
  - drop row if
  - drop column
@@ -83,13 +83,13 @@ Methods
  - column iterator
  - cells()
  - all?() - cells/rows/columns
- - any?() - cells/rows/columns
+ - [x] any?() - cells/rows/columns
  - none?() - cells/rows/columns
  - trim
- - neighbors() (options for values at edges)
+ - [ ] neighbors() (options for values at edges)
  - [x] get/set/at
  - select row
  - select column
  - get diagonal(s)
- - inject values (list of points/values)
+ - [ ] inject values (list of points/values)
  
