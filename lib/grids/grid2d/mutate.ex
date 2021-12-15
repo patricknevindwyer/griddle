@@ -67,8 +67,6 @@ defmodule ExGrids.Grid2D.Mutate do
     grid |> Map.put(:grid, updated_grid)
   end
 
-  # TODO: add docs about origami (AoC 2021 day 13)
-  # TODO: add origami tests (AOC test code where we can find it)
   @doc """
   Fold a grid like a piece of paper. This fold can go in one of two directions.
 

@@ -36,6 +36,21 @@ defmodule ExGrids.Grid2D.Display do
     grid
   end
 
+  # TODO: abstract the display/2 methods to use the to_string methods
+  # TODO: tests
+  # TODO: docs
+  def to_string(%Grid2D{}=grid, :character_cells) do
+    height_range(grid)
+    |> Enum.map(fn h_idx ->
+      width_range(grid)
+      |> Enum.map(fn w_idx ->
+        grid |> Grid2D.Enum.at!({w_idx, h_idx})
+      end)
+      |> Enum.join("")
+    end)
+    |> Enum.join("\n")
+  end
+
   # TODO: move these to a util module, extract duplicates from Enum.ex
   defp width_range(%Grid2D{width: w}) do
     if w > 0 do
