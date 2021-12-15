@@ -67,10 +67,8 @@ defmodule ExGrids.Grid2D.Mutate do
     grid |> Map.put(:grid, updated_grid)
   end
 
-  # TODO: extend fold options (does left vs right fold matter?)
   # TODO: add docs about origami (AoC 2021 day 13)
-  # TODO: add origami tests
-  # TODO: Take a default value to fill in for the fold, we hard code `.` right now
+  # TODO: add origami tests (AOC test code where we can find it)
   @doc """
   Fold a grid like a piece of paper. This fold can go in one of two directions.
 
@@ -121,7 +119,6 @@ defmodule ExGrids.Grid2D.Mutate do
           top |> shift(:down, bottom_height - top_height, fill_value),
           bottom
         }
-        :ok
     end
 
     # merge the grids
