@@ -6,6 +6,7 @@ defmodule ExGrids.Grid2D.Mutate do
   alias ExGrids.Grid2D
   import ExGrids.Grid2D.Enum, only: [coordinates: 1, at!: 2, put: 3, dimensions: 1]
 
+  # TODO: Tests
   @doc """
   Fill every cell in a grid using a provided value or function. If the
   provided function is a 1-arity function, it will be called for every
@@ -73,27 +74,27 @@ defmodule ExGrids.Grid2D.Mutate do
   @doc """
   Fold a grid like a piece of paper. This fold can go in one of two directions.
 
-   - `:vertical_up` - Fold at a specific row, from the bottom to the top
-   - `:horizontal_left` - Fold at a specific column, from the right to the left
+   - `:vertical` - Fold at a specific row, from the bottom to the top
+   - `:horizontal` - Fold at a specific column, from the right to the left
 
   All folds drop the data from the fold point.
 
   A _merge_ function is required taking two parameters, the order of parameters
   is dependent on the fold mode:
 
-   - `:vertical_up` - Merge parameters are `top value`, `bottom value`
-   - `:horizontal_left` - Merge parameters are `left value`, `right value`
+   - `:vertical` - Merge parameters are `top value`, `bottom value`
+   - `:horizontal` - Merge parameters are `left value`, `right value`
 
   ## Example
 
-      iex> Grid2D.Create.from_string("#.##..#..#.\\n#...#......", :character_cells) |> Mutate.fold(:horizontal_left, 5, fn t, b -> Enum.min([t, b]) end) |> Grid2D.Enum.at!({1, 0})
+      iex> Grid2D.Create.from_string("#.##..#..#.\\n#...#......", :character_cells) |> Mutate.fold(:horizontal, 5, ".", fn t, b -> Enum.min([t, b]) end) |> Grid2D.Enum.at!({1, 0})
       "#"
 
-      iex> Grid2D.Create.from_string("#.#.#\\n.....\\n.#.#.", :character_cells) |> Mutate.fold(:vertical_up, 1, fn l, r -> Enum.min([l, r]) end) |> Grid2D.Enum.at!({1, 0})
+      iex> Grid2D.Create.from_string("#.#.#\\n.....\\n.#.#.", :character_cells) |> Mutate.fold(:vertical, 1, ".", fn l, r -> Enum.min([l, r]) end) |> Grid2D.Enum.at!({1, 0})
       "#"
 
   """
-  def fold(%Grid2D{}=og, :vertical_up, y_fold, merge_fn) when is_integer(y_fold) and is_function(merge_fn, 2) do
+  def fold(%Grid2D{}=og, :vertical, y_fold, fill_value, merge_fn) when is_integer(y_fold) and is_function(merge_fn, 2) do
 
     # split the grid
     {top, bottom} = og |> cut(:vertical, y_fold)
@@ -111,13 +112,13 @@ defmodule ExGrids.Grid2D.Mutate do
         # top is larger than bottom
         {
           top,
-          bottom |> shift(:down, top_height - bottom_height, ".")
+          bottom |> shift(:down, top_height - bottom_height, fill_value)
         }
 
       top_height < bottom_height ->
         # bottom is larger than top
         {
-          top |> shift(:down, bottom_height - top_height, "."),
+          top |> shift(:down, bottom_height - top_height, fill_value),
           bottom
         }
         :ok
@@ -133,7 +134,7 @@ defmodule ExGrids.Grid2D.Mutate do
     top |> inject_values(merge_c_and_v)
   end
 
-  def fold(%Grid2D{}=og, :horizontal_left, x_fold, merge_fn) when is_integer(x_fold) and is_function(merge_fn, 2) do
+  def fold(%Grid2D{}=og, :horizontal, x_fold, fill_value, merge_fn) when is_integer(x_fold) and is_function(merge_fn, 2) do
 
     # split the grid
     {left, right} = og |> cut(:horizontal, x_fold)
@@ -151,13 +152,13 @@ defmodule ExGrids.Grid2D.Mutate do
         # left is larger than right
         {
           left,
-          right |> shift(:right, left_width - right_width, ".")
+          right |> shift(:right, left_width - right_width, fill_value)
         }
 
       left_width < right_width ->
         # right is larger than left
         {
-          left |> shift(:right, right_width - left_width, "."),
+          left |> shift(:right, right_width - left_width, fill_value),
           right
         }
     end
